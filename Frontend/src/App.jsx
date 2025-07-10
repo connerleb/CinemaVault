@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import logo from './assets/logo.png'
 import './App.css'
+import { CgAddR, CgHome, CgSearch, CgProfile, CgUserList } from "react-icons/cg";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,6 +15,13 @@ function App() {
             </p>
         </div>
 
+        <nav className={"navBar"}>
+            <button><CgHome size={24}/></button>
+            <button><CgUserList size={24}/></button>
+            <button><CgAddR size={24}/></button>
+            <button><CgSearch size={24}/></button>
+            <button><CgProfile size={24}/></button>
+        </nav>
     </>
   )
 }
