@@ -46,7 +46,6 @@ const createTables = async() => {
             `CREATE TABLE IF NOT EXISTS users (
             id INT PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL,
             role VARCHAR(255) NOT NULL
             )`,
@@ -91,6 +90,78 @@ const createTables = async() => {
         process.exit(1); // exit if tables cannot be created
     }
 }
+
+
+app.post('/postuser',async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+
+    const [existing] = await db.promise().query("SELECT * FROM users WHERE username = ?", [username]);
+    if (existing.length > 0) {
+        return res.send("The username already exists");
+    }
+
+    db.query(
+        "INSERT INTO users(username, password) VALUES (?,?)",
+        [username, password],
+
+        (err) => {
+            if (err) {
+                return res.json("Error creating user: " + err);
+            }
+            res.json({success: true, username: username});
+        }
+    );
+
+});
+
+app.post('/login',async (req, res) => {
+    // get the image url from the user and the parent id
+    let username = req.body.username;
+    let password = req.body.password;
+
+
+    const [users] = await db.promise().query("SELECT * FROM users WHERE username = ?", [username]);
+    if (users.length <= 0) {
+        return res.send("The username does not exist");
+    }
+
+    const user = users[0];
+
+    if (password !== user.password){
+        return res.send("Invalid password");
+    }
+
+    res.json({success: true, username: username});
+
+});
+
+
+app.post('/deleteuser',async (req, res) => {
+    let username = req.body.username;
+
+    const [existing] = await db.promise().query("SELECT * FROM users WHERE username = ?", [username]);
+
+    // if the username exists
+    if (existing.length > 0) {
+
+        try {
+            await db.promise().query(
+                "DELETE FROM users WHERE username = ?",
+                [username],
+            );
+            res.json({success: true, username: username});
+        }
+        catch (error) {
+            return res.send("Error deleting user: " + error);
+        }
+    }
+    else{
+        return res.send("Error user ID does not exist");
+    }
+
+});
 
 
 
