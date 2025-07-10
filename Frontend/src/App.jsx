@@ -36,6 +36,8 @@ function App() {
                   <Route path="/search" element={<Search />}></Route>
                   <Route path="/post" element={<Post />}></Route>
                   <Route path="/profile" element={<Profile />}></Route>
+                  <Route path="/login" element={<Login />}></Route>
+                  <Route path="/signup" element={<Signup />}></Route>
 
               </Routes>
               <NavBar />
