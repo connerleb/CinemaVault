@@ -37,13 +37,22 @@ function NavBar() {
 
 function App() {
     const [user, setUser] = useState(null); // keep track of the logged-in user
+    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
         const loggedUser = localStorage.getItem("username");
         if (loggedUser) {
             setUser(loggedUser);
+            setLoading(false);
         }
     }, []);
+
+    if (loading) {
+        return <div>
+            <p>Loading...</p>
+        </div>
+    }
 
   return (
       <Router>

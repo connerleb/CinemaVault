@@ -103,8 +103,8 @@ app.post('/postuser',async (req, res) => {
     }
 
     db.query(
-        "INSERT INTO users(username, password) VALUES (?,?)",
-        [username, password],
+        "INSERT INTO users(username, password, role) VALUES (?,?, ?)",
+        [username, password, "newbie"],
 
         (err) => {
             if (err) {

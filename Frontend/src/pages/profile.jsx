@@ -12,7 +12,9 @@ function profile() {
         }
     }, []);
     return (
-        0
+        <div className="profile">
+            <p>{localStorage.getItem("username")}</p>
+        </div>
     );
 }
 
