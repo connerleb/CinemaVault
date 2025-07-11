@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const cors = require('cors');
+const axios = require('axios');
 
 
 const app = express(); // setup express
@@ -160,6 +161,24 @@ app.post('/deleteuser',async (req, res) => {
         return res.send("Error user ID does not exist");
     }
 
+});
+
+app.get('/api/search', async (req, res) => {
+    const query = req.query.query;
+    const apiKey = process.env.TMDB_API_KEY;
+
+    try{
+        const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
+            params: {
+                query: query,
+                api_key: apiKey,
+            }
+        });
+
+        res.json(response.data.results);
+    } catch(err) {
+        return res.send("Error finding movie: " + err);
+    }
 });
 
 
