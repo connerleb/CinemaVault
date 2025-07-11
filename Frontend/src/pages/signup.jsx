@@ -5,11 +5,13 @@ function Signup({onLogin}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const navigate = useNavigate();
 
     const signup = (e) => {
         e.preventDefault(); // prevent the browser reload
         setLoading(true);
+        setError(false);
 
         // create the user by using fetch to post the new user
         fetch('https://cinemavault-b2jo.onrender.com/postuser',
@@ -30,11 +32,15 @@ function Signup({onLogin}) {
                 navigate("/home");
             })
             .catch(error => {
+                setError(true);
                 console.error("Error creating user: " + error);
             })
     }
     return (
         <div className="bgBox">
+            {error && (
+                <p className="error">{error}</p>
+            )}
             <form className="signupBox" onSubmit={signup}>
                 <h1 className="signupTitle">Sign Up</h1>
                 <input className="username"

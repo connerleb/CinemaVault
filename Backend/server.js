@@ -109,7 +109,7 @@ app.post('/postuser',async (req, res) => {
 
         (err) => {
             if (err) {
-                return res.json("Error creating user: " + err);
+                return res.status(400).json({error: "Username already exists"});
             }
             res.json({success: true, username: username});
         }
@@ -145,7 +145,6 @@ app.post('/deleteuser',async (req, res) => {
 
     // if the username exists
     if (existing.length > 0) {
-
         try {
             await db.promise().query(
                 "DELETE FROM users WHERE username = ?",
@@ -163,6 +162,7 @@ app.post('/deleteuser',async (req, res) => {
 
 });
 
+// api request to search for the movie
 app.get('/api/search', async (req, res) => {
     const query = req.query.query;
     const apiKey = process.env.TMDB_API_KEY;
@@ -181,5 +181,82 @@ app.get('/api/search', async (req, res) => {
     }
 });
 
+// get info about the user to display on the profile
+app.get('/userinfo/:username', async (req, res) => {
+    const username = req.params.username;
 
+    try{
+        const [rows] = await db.promise().query("SELECT username, role FROM users WHERE username = ?", [username]);
+        if (rows.length === 0){
+            return res.status(404).json({error: "Username does not exist"});
+        }
+        res.json(rows[0]);
+    } catch(err) {
+        return res.status(500).json({error: err});
+    }
+});
+
+// endpoint to change the username
+app.put('/userinfo/:username/change-username', async (req, res) => {
+    const username = req.params.username;
+    const {newUsername} = req.body;
+
+    try {
+        const [taken] = await db.promise().query(
+            "SELECT * FROM users WHERE username = ?",
+            [newUsername]
+        );
+
+        if (taken.length > 0 && newUsername !== username){
+            return res.status(400).json({error: "Username already taken"});
+        }
+
+        await db.promise().query(
+            "UPDATE users SET username = ? WHERE username = ?",
+            [newUsername, username]
+        );
+
+        res.json({success: true, username: newUsername});
+    } catch(err) {
+        res.status(500).json({error: "Could not update username: " + err})
+    }
+});
+
+// endpoint to change the password
+app.put('/userinfo/:username/change-password', async (req, res) => {
+    const username = req.params.username;
+    const {newPassword} = req.body;
+
+    try {
+        await db.promise().query(
+            "UPDATE users SET password = ? WHERE username = ?",
+            [newPassword, username]
+        );
+
+        res.json({success: true});
+
+    } catch(err) {
+        res.status(500).json({error: "Could not update password: " + err})
+    }
+});
+
+app.post('/verify-password', async (req, res) => {
+    const {username, password} = req.body;
+
+    try{
+        const [rows] = await db.promise().query("SELECT password FROM users WHERE username = ?", [username]);
+        if (rows.length === 0){
+            return res.status(404).json({error: "Username does not exist"});
+        }
+
+        if (rows[0].password === password){
+            return res.json({valid: true});
+        }
+        else{
+            return res.json({valid: false})
+        }
+    } catch(err) {
+        return res.status(500).json({error: err});
+    }
+});
 
