@@ -1,27 +1,49 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useState} from "react";
 
-function signup() {
-    const [email, setEmail] = useState('');
+function Signup({onLogin}) {
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const signup = (e) => {
         e.preventDefault(); // prevent the browser reload
 
-        // add sql query to create account
+        // create the user by using fetch to post the new user
+        fetch('https://cinemavault-b2jo.onrender.com/postuser',
+            {
+                method: 'POST',
+                body: JSON.stringify({username: username, password: password}),
+                headers: {'Content-type': 'application/json'}
+            })
+            .then (response => {
+                if (!response.ok){
+                    throw new Error('Failed to sign up');
+                }
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem("username", username); // save username locally
+                onLogin(username); // save the username in the app
+                navigate("/home");
+            })
+            .catch(error => {
+                console.error("Error creating user: " + error);
+            })
     }
     return (
         <div className="bgBox">
             <form className="signupBox" onSubmit={signup}>
                 <h1 className="signupTitle">Sign Up</h1>
-                <input className="email"
-                       placeholder="username/email"
-                       value={email}
-                       onChange={(e) => setEmail(e.target.value)}
+                <input className="username"
+                       placeholder="username"
+                       value={username}
+                       onChange={(e) => setUsername(e.target.value)}
                 ></input>
                 <br/>
                 <input className="password"
                        placeholder="password"
+                       type="password"
                        value={password}
                        onChange={(e) => setPassword(e.target.value)}
                 ></input>
@@ -38,4 +60,4 @@ function signup() {
     );
 }
 
-export default signup;
+export default Signup;

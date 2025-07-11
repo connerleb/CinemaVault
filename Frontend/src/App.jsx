@@ -9,7 +9,18 @@ import Post from './pages/post.jsx';
 import Profile from './pages/profile.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
+import {useEffect, useState} from "react";
 
+// verify the user is logged in and ensure the user cannot visit
+// any other pages without logging in
+function VerifyLogin({user, children}) {
+    if (user){
+        return children;
+    }
+    else{
+        return <Navigate to="/login" replace/>
+    }
+}
 function NavBar() {
     const navigate = useNavigate();
 
@@ -25,22 +36,59 @@ function NavBar() {
 }
 
 function App() {
+    const [user, setUser] = useState(null); // keep track of the logged-in user
+
+    useEffect(() => {
+        const loggedUser = localStorage.getItem("username");
+        if (loggedUser) {
+            setUser(loggedUser);
+        }
+    }, []);
 
   return (
       <Router>
           <div>
               <Routes>
                   <Route path="/" element={<Navigate to="/home" replace />}></Route>
-                  <Route path="/home" element={<Home />}></Route>
-                  <Route path="/friends" element={<Friends />}></Route>
-                  <Route path="/search" element={<Search />}></Route>
-                  <Route path="/post" element={<Post />}></Route>
-                  <Route path="/profile" element={<Profile />}></Route>
-                  <Route path="/login" element={<Login />}></Route>
-                  <Route path="/signup" element={<Signup />}></Route>
 
+                  <Route path="/home"
+                         element={<VerifyLogin user={user}>
+                             <Home />
+                             </VerifyLogin>
+
+                  } />
+
+                  <Route path="/friends"
+                         element={<VerifyLogin user={user}>
+                             <Friends />
+                         </VerifyLogin>
+
+                         } />
+
+                  <Route path="/search"
+                         element={<VerifyLogin user={user}>
+                             <Search />
+                         </VerifyLogin>
+
+                         } />
+
+                  <Route path="/post"
+                         element={<VerifyLogin user={user}>
+                             <Post />
+                         </VerifyLogin>
+                         } />
+
+                  <Route path="/profile"
+                         element={<VerifyLogin user={user}>
+                             <Profile />
+                         </VerifyLogin>
+
+                         } />
+
+                  <Route path="/login" element={<Login onLogin={setUser} />}></Route>
+                  <Route path="/signup" element={<Signup onLogin={setUser} />}></Route>
               </Routes>
-              <NavBar />
+              {user && <NavBar />}
           </div>
       </Router>
   );
