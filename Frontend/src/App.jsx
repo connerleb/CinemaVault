@@ -89,9 +89,8 @@ function App() {
 
                   <Route path="/profile"
                          element={<VerifyLogin user={user}>
-                             <Profile />
+                             <Profile setUser={setUser} />
                          </VerifyLogin>
-
                          } />
 
                   <Route path="/login" element={<Login onLogin={setUser} />}></Route>
