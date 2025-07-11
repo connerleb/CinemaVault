@@ -4,10 +4,12 @@ import {useState} from "react";
 function Signup({onLogin}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const signup = (e) => {
         e.preventDefault(); // prevent the browser reload
+        setLoading(true);
 
         // create the user by using fetch to post the new user
         fetch('https://cinemavault-b2jo.onrender.com/postuser',
@@ -49,7 +51,7 @@ function Signup({onLogin}) {
                 ></input>
                 <br/>
                 <br/>
-                <button type="submit">Sign Up</button>
+                <button type="submit" disabled={loading}>{loading ? "Creating account..." : "Sign Up"}</button>
 
                 <p>Already have an account?
                     <br />

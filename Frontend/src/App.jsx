@@ -44,8 +44,8 @@ function App() {
         const loggedUser = localStorage.getItem("username");
         if (loggedUser) {
             setUser(loggedUser);
-            setLoading(false);
         }
+        setLoading(false);
     }, []);
 
     if (loading) {

@@ -4,10 +4,12 @@ import {Link, useNavigate} from "react-router-dom";
 function Login({onLogin}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const login = (e) => {
         e.preventDefault(); // prevent the browser reload
+        setLoading(true);
 
         // attempt to login using the username and password
         fetch('https://cinemavault-b2jo.onrender.com/login',
@@ -44,7 +46,7 @@ function Login({onLogin}) {
                 ></input>
                 <br/>
                 <br/>
-                <button type="submit">Log In</button>
+                <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Log In"}</button>
 
                 <p>Don't have an account?
                 <br />

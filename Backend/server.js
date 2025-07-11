@@ -177,7 +177,7 @@ app.get('/api/search', async (req, res) => {
 
         res.json(response.data.results);
     } catch(err) {
-        return res.send("Error finding movie: " + err);
+        return res.status(500).json({error: err});
     }
 });
 
