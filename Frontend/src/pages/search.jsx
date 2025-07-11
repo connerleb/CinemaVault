@@ -13,7 +13,15 @@ function Search() {
         try {
             const response = await fetch(`https://cinemavault-b2jo.onrender.com/api/search?query=${encodeURIComponent(searchQuery)}`);
             const data = await response.json();
-            setResults(data);
+
+            // filter the results to ensure only the most relevant movies appear
+            const filteredResults = data.filter((movie) =>
+            movie.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            // now sort the filtered results by popularity
+            const sortedResults = filteredResults.sort((a, b) => b.popularity - a.popularity);
+
+            setResults(sortedResults);
         } catch (err){
             console.log("Error searching for movie: " + err);
         }
